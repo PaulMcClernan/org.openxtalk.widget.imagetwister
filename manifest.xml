@@ -1,0 +1,78 @@
+<package version="0.0">
+  <name>community.livecode.paulmcclernan.imagetester</name>
+  <title>Image Tester</title>
+  <author>Paul McClernan</author>
+  <version>1.0.0</version>
+  <license>community</license>
+  <type>widget</type>
+  <requires name="com.livecode.canvas"/>
+  <requires name="com.livecode.math"/>
+  <requires name="com.livecode.widget"/>
+  <requires name="com.livecode.logic"/>
+  <requires name="com.livecode.byte"/>
+  <requires name="com.livecode.char"/>
+  <requires name="com.livecode.list"/>
+  <requires name="com.livecode.arithmetic"/>
+  <requires name="com.livecode.binary"/>
+  <requires name="com.livecode.string"/>
+  <requires name="com.livecode.type"/>
+  <requires name="com.livecode.array"/>
+  <requires name="com.livecode.engine"/>
+  <requires name="com.livecode.mathfoundation"/>
+  <metadata key="preferredSize">150,150</metadata>
+  <metadata key="svgicon">M0.000000 15.000000C-0.000001 6.715731 6.715729 0.000000 15.000000 0.000000L113.000000 0.000000C121.284271 0.000000 128.000000 6.715729 128.000000 15.000000L128.000000 17.000000C128.000000 25.284271 121.284271 32.000000 113.000000 32.000000L15.000000 32.000000C6.715728 32.000000-0.000001 25.284271 0.000000 16.999998L0.000000 15.000000Z</metadata>
+  <property name="filename" get="string" set="string"/>
+  <metadata key="filename.editor">com.livecode.pi.file</metadata>
+  <property name="radius" get="number" set="number"/>
+  <property name="roundTopLeft" get="boolean" set="boolean"/>
+  <property name="roundTopRight" get="boolean" set="boolean"/>
+  <property name="roundBottomRight" get="boolean" set="boolean"/>
+  <property name="roundBottomLeft" get="boolean" set="boolean"/>
+  <property name="formattedWidth" get="integer"/>
+  <property name="formattedHeight" get="integer"/>
+  <property name="resizeQuality" get="string" set="string"/>
+  <metadata key="resizeQuality.editor">com.livecode.pi.enum</metadata>
+  <metadata key="resizeQuality.options">none,low,medium,high</metadata>
+  <metadata key="resizeQuality.default">medium</metadata>
+  <metadata key="backgroundColor.editor">com.livecode.pi.color</metadata>
+  <metadata key="backgroundColor.default">255,0,0</metadata>
+  <metadata key="backgroundcolor.section">Colors</metadata>
+  <property name="transformMatrixVarA" get="number" set="number"/>
+  <metadata key="transformMatrixVarA.default">1</metadata>
+  <metadata key="transformMatrixVarA.editor">com.livecode.pi.number</metadata>
+  <property name="transformMatrixVarB" get="number" set="number"/>
+  <metadata key="transformMatrixVarB.default">0</metadata>
+  <metadata key="transformMatrixVarB.editor">com.livecode.pi.number</metadata>
+  <property name="transformMatrixVarC" get="number" set="number"/>
+  <metadata key="transformMatrixVarC.default">0</metadata>
+  <metadata key="transformMatrixVarC.editor">com.livecode.pi.number</metadata>
+  <property name="transformMatrixVarD" get="number" set="number"/>
+  <metadata key="transformMatrixVarD.default">1</metadata>
+  <metadata key="transformMatrixVarD.editor">com.livecode.pi.number</metadata>
+  <property name="transformMatrixVarE" get="number" set="number"/>
+  <metadata key="transformMatrixVarE.default">0</metadata>
+  <metadata key="transformMatrixVarE.editor">com.livecode.pi.number</metadata>
+  <property name="transformMatrixVarF" get="number" set="number"/>
+  <metadata key="transformMatrixVarF.default">0</metadata>
+  <metadata key="transformMatrixVarF.editor">com.livecode.pi.number</metadata>
+  <property name="skewVarA" get="number" set="number"/>
+  <metadata key="skewVarA.default">0</metadata>
+  <metadata key="skewVarA.editor">com.livecode.pi.number</metadata>
+  <property name="skewVarB" get="number" set="number"/>
+  <metadata key="skewVarB.default">0</metadata>
+  <metadata key="skewVarB.editor">com.livecode.pi.number</metadata>
+  <property name="rotation" get="number" set="number"/>
+  <metadata key="rotation.editor">com.livecode.pi.number</metadata>
+  <metadata key="rotation.default">0</metadata>
+  <handler name="OnCreate" parameters="" return="any"/>
+  <handler name="OnSave" parameters="out array" return="any"/>
+  <handler name="OnLoad" parameters="in array" return="any"/>
+  <handler name="OnOpen" parameters="" return="any"/>
+  <handler name="OnGeometryChanged" parameters="" return="any"/>
+  <handler name="OnMouseUp" parameters="" return="any"/>
+  <handler name="OnMouseCancel" parameters="" return="any"/>
+  <handler name="OnMouseDown" parameters="" return="any"/>
+  <handler name="OnPaint" parameters="" return="any"/>
+  <handler name="OnClose" parameters="" return="any"/>
+  <handler name="rotatedTransformation" parameters="in number,in Point,in boolean" return="Transform"/>
+</package>

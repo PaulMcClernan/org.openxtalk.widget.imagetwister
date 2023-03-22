@@ -1,0 +1,27 @@
+import module community.livecode.paulmcclernan.imagetester
+  use com.livecode.canvas
+  use com.livecode.math
+  use com.livecode.widget
+  use com.livecode.logic
+  use com.livecode.byte
+  use com.livecode.char
+  use com.livecode.list
+  use com.livecode.arithmetic
+  use com.livecode.binary
+  use com.livecode.string
+  use com.livecode.type
+  use com.livecode.array
+  use com.livecode.engine
+  use com.livecode.mathfoundation
+  handler OnCreate() returns optional any
+  handler OnSave(out rProperties as Array) returns optional any
+  handler OnLoad(in pProperties as Array) returns optional any
+  handler OnOpen() returns optional any
+  handler OnGeometryChanged() returns optional any
+  handler OnMouseUp() returns optional any
+  handler OnMouseCancel() returns optional any
+  handler OnMouseDown() returns optional any
+  handler OnPaint() returns optional any
+  handler OnClose() returns optional any
+  handler rotatedTransformation(in pRotation as Number, in pCenter as Point, in pRotateClockwise as Boolean) returns Transform
+end module
