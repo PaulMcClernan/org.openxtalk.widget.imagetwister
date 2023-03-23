@@ -281,64 +281,23 @@ public handler OnPaint()
 	variable tWidgetLocPoint as Point
 	variable tCompWidth as Number
 	variable tCompHeight as Number
+	variable tLeft as Number
+	variable tTop as Number
 
-	put 0.875 into tScale
-	put my width * tScale into tCompWidth
-	put my height * tScale into tCompHeight
+	set the image resize quality of this canvas to mResizeQuality
+	put point [my width *.5, my height * .5] into tWidgetLocPoint
+	put rotatedTransformation(mRotation,tWidgetLocPoint,true) into tTransform
+	put rounded rectangle path of rectangle [ 0, 0, my width, my height] with radii [mRadius,mRadius] into mPath
+	transform mPath by tTransform
 
 	if mImage is not nothing then
-		set the image resize quality of this canvas to mResizeQuality
-		-- variable tImage
-		-- put image from file "images/backgroundpattern.png" into tImage
-		--put pattern with mImage rotated by mRotation into mPaint
-		--
-		put point [my width *.5, my height * .5] into tWidgetLocPoint
-		-- put transform from matrix [0,2,-2,0,0,0] into tTransform
-		put rotatedTransformation(mRotation,tWidgetLocPoint,true) into tTransform
 	   put pattern with mImage transformed by tTransform into mPaint
-
-		transform mPaint by tTransform
-
-		put rounded rectangle path of rectangle [ (my width - tCompWidth) / 2, (my height - tCompHeight) / 2, tCompWidth, tCompHeight] with radii [mRadius,mRadius] into mPath
-		 transform mPath by tTransform
-
-		scale mPaint by [my width / the width of mImage * tScale, (my height / the height of mImage) * tScale ]
-		-- scale mPath by [(my width / the width of mImage), (my height / the height of mImage) ]
-		-- scale mPaint by[ tScale, tScale ]
- 	  -- 	scale mPaint by [ tCompWidth * tScale, tCompHeight * tScale ]
-		-- scale mPath by [ tCompWidth * tScale, tCompHeight * tScale ]
-
-		translate mPaint by [ (my height - tCompHeight) / 2, (my width - tCompWidth) / 2]
-		-- translate mPath  by [ (my height - tCompHeight) / 2, (my width - tCompWidth) / 2]
-
-		-- ScaleX, SkewX, TransX, SkewY, ScaleY, TransY, Persp0, Persp1, and Persp2.
-		-- transform mPaint by transform with matrix [mTransMatrixVarA,mTransMatrixVarB,mTransMatrixVarC,mTransMatrixVarD,mTransMatrixVarE,mTransMatrixVarF]
-		-- transform mPath by transform with matrix [mTransMatrixVarA,mTransMatrixVarB,mTransMatrixVarC,mTransMatrixVarD,mTransMatrixVarE,mTransMatrixVarF]
-
-		-- put the identity transform into tTransform
-		-- skew tTransform by [mSkewVarA, mSkewVarB]
-
-		-- transform mPaint by tTransform
-		-- transform mPath by tTransform
-
-		set the paint of this canvas to mPaint
-		fill mPath on this canvas
-		-- rotate this canvas by mRotation
-		-- scale mImage by [(my width /4)/ the width of mImage, my height /4 /the height of mImage]
-		-- scale mImage by [my width /2, my height /2]
-		-- transform mImage by tTransform
-		-- draw mImage into rectangle [my width * .25,my height *.25, the width of mImage,the height of mImage] of this canvas
-		-- draw mImage into rectangle [my width * .25,my height *.25, my width * .75, my height *.75] of this canvas
-		--  draw mImage into mPath of this canvas
-		-- rotate this canvas by mRotation
-		-- 	draw mImage into rectangle [0,my height *.25, my width * .75, my height *.75] of this canvas
-		-- draw from rectangle[0,0,the width of mImage,the height of mImage] of mImage into rectangle [the width of mImage *.25, the height of mImage* .25, the width of mImage *.75, the height of mImage* .75] of this canvas
+		scale mPaint by [ (my width / the width of mImage), (my height  / the height of mImage)]
 	else
-		put rounded rectangle path of rectangle [ (my width - tCompWidth) / 2, (my height - tCompHeight) / 2, tCompWidth * tScale, tCompHeight * tScale ] with radii [mRadius,mRadius] into mPath
 		put my background paint into mPaint
-		set the paint of this canvas to mPaint
-		fill mPath on this canvas
 	end if
+	set the paint of this canvas to mPaint
+	fill mPath on this canvas
 end handler
 
 public handler OnClose()
@@ -380,6 +339,8 @@ public handler rotatedTransformation(in pRotation as Number, in pCenter as Point
 
   variable tTransform as Transform
   put transform with matrix [tA,tB,tC,tD,tX,tY] into tTransform
+
+  skew tTransform by [mSkewVarA, mSkewVarB]
 
   return tTransform
 end handler
