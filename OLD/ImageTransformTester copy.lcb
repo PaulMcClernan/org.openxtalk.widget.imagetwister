@@ -51,8 +51,7 @@ widget community.livecode.paulmcclernan.imagetester
 	metadata backgroundcolor.section is "Colors"
 
 	private handler setRadius(in pRadius as Number)
-		-- put max(pRadius, 0) into mRadius
-		put pRadius into mRadius
+		put max(pRadius, 0) into mRadius
 		redraw all
 	end handler
 
@@ -267,39 +266,82 @@ widget community.livecode.paulmcclernan.imagetester
 		end if
 	end handler
 
--- called whenever needs to redraw the widget
+-- private handler createImagePaint() returns nothing
+--	if mImage is not nothing then
+--		put pattern with mImage into mPaint
+--		scale mPaint by [my width/the width of mImage, my height/the height of mImage]
+--	end if
+-- end handler
+	----------
+-- called whenever LiveCode needs to redraw the widget
 public handler OnPaint()
-	variable tScale as Number
-	variable tTransform
-	variable tWidgetLocPoint as Point
-	variable tCompWidth as Number
-	variable tCompHeight as Number
-	variable tLeft as Number
-	variable tTop as Number
-
-	set the image resize quality of this canvas to mResizeQuality
-	put point [my width *.5, my height * .5] into tWidgetLocPoint
-	put rotatedTransformation(mRotation,tWidgetLocPoint,true) into tTransform
-	put rounded rectangle path of rectangle [ 0, 0, my width, my height] with radii [mRadius,mRadius] into mPath
-	transform mPath by tTransform
 
 	if mImage is not nothing then
+		set the image resize quality of this canvas to mResizeQuality
+		-- variable tImage
+		-- put image from file "images/backgroundpattern.png" into tImage
+		--put pattern with mImage rotated by mRotation into mPaint
+		-- scale mImage by [my width * 0.25, my height * 0.75]
+		-- put pattern with mImage rotated by mRotation into mPaint
+		-- put pattern with mImage into mPaint
+		--- Set up the pattern transform
+		variable tTransform
+		variable tPoint as Point
+		put point [my width *.5, my height * .5] into tPoint
+		-- put transform from matrix [0,2,-2,0,0,0] into tTransform
+		put rotatedTransformation(mRotation,tPoint,true) into tTransform
 	   put pattern with mImage transformed by tTransform into mPaint
-		scale mPaint by [ (my width / the width of mImage), (my height  / the height of mImage)]
+		put rounded rectangle path of rectangle [0,0,(my width / the width of mImage)*0.5,(my height / the height of mImage) *0.5] with radii [mRadius,mRadius] into mPath
+		transform mPath by tTransform
+ 	 --	scale mPaint by [my width * 0.5, my height * 0.5]
+		scale mPath by [my width * 0.5, my height * 0.5]
+		scale mPaint by [my width / the width of mImage * .5, my height / the height of mImage * .5]
+		-- scale mPath by [my width / the width of mImage * .5, my height / the height of mImage * .5]
+		-- scale mPaint by [the width of mImage / 2, the height of mImage / 2 ]
+		-- scale mPath by [my width/4, my height/4]
+		-- translate mPaint by [my width * 0.25 / the width of mImage * 0.25, my height * 0.25 / the height of mImage * 0.25]
+		translate mPaint by [my width * 0.5, my height * 0.5]
+		translate mPath by [my width * 0.25 / the width of mImage * 0.25, my height * 0.25 / the height of mImage * 0.25]
 
-		put transform with matrix [mTransMatrixVarA,mTransMatrixVarB,mTransMatrixVarC,mTransMatrixVarD,mTransMatrixVarE,mTransMatrixVarF] into tTransform
+		-- translate mPaint by [my width * 0.25, my height * 0.25]
+		--translate mPath by [my width * 0.25, my height * 0.25 ]
+
+		-- translate mPaint by [my width / the width of mImage * .5, my height / the height of mImage * .5]
+		-- translate mPath by [my width * .25, my height *.25]
+		-- ScaleX, SkewX, TransX, SkewY, ScaleY, TransY, Persp0, Persp1, and Persp2.
+		-- transform mPaint by transform with matrix [mTransMatrixVarA,mTransMatrixVarB,mTransMatrixVarC,mTransMatrixVarD,mTransMatrixVarE,mTransMatrixVarF]
+		-- transform mPath by transform with matrix [mTransMatrixVarA,mTransMatrixVarB,mTransMatrixVarC,mTransMatrixVarD,mTransMatrixVarE,mTransMatrixVarF]
+
+		-- put the identity transform into tTransform
+		skew tTransform by [mSkewVarA, mSkewVarB]
+
 		transform mPaint by tTransform
 		transform mPath by tTransform
+
+		set the paint of this canvas to mPaint
+		fill mPath on this canvas
+		-- rotate this canvas by mRotation
+		-- scale mImage by [(my width /4)/ the width of mImage, my height /4 /the height of mImage]
+		-- scale mImage by [my width /2, my height /2]
+		-- transform mImage by tTransform
+		-- draw mImage into rectangle [my width * .25,my height *.25, the width of mImage,the height of mImage] of this canvas
+		-- draw mImage into rectangle [my width * .25,my height *.25, my width * .75, my height *.75] of this canvas
+		--  draw mImage into mPath of this canvas
+		-- rotate this canvas by mRotation
+		-- 	draw mImage into rectangle [0,my height *.25, my width * .75, my height *.75] of this canvas
+		-- draw from rectangle[0,0,the width of mImage,the height of mImage] of mImage into rectangle [the width of mImage *.25, the height of mImage* .25, the width of mImage *.75, the height of mImage* .75] of this canvas
 	else
+		put rounded rectangle path of rectangle [my width *.25, my height * .25, my width * .75, my height * .75] with radii [30,30] into mPath
 		put my background paint into mPaint
+		set the paint of this canvas to mPaint
+		fill mPath on this canvas
 	end if
-	set the paint of this canvas to mPaint
-	fill mPath on this canvas
 end handler
 
 public handler OnClose()
- ---?
+
 end handler
+
 
 public handler rotatedTransformation(in pRotation as Number, in pCenter as Point, in pRotateClockwise as Boolean) returns Transform
   variable tX as Number
@@ -335,8 +377,6 @@ public handler rotatedTransformation(in pRotation as Number, in pCenter as Point
 
   variable tTransform as Transform
   put transform with matrix [tA,tB,tC,tD,tX,tY] into tTransform
-
-  skew tTransform by [mSkewVarA, mSkewVarB]
 
   return tTransform
 end handler

@@ -267,7 +267,14 @@ widget community.livecode.paulmcclernan.imagetester
 		end if
 	end handler
 
--- called whenever needs to redraw the widget
+-- private handler createImagePaint() returns nothing
+--	if mImage is not nothing then
+--		put pattern with mImage into mPaint
+--		scale mPaint by [my width/the width of mImage, my height/the height of mImage]
+--	end if
+-- end handler
+	----------
+-- called whenever LiveCode needs to redraw the widget
 public handler OnPaint()
 	variable tScale as Number
 	variable tTransform
@@ -286,10 +293,6 @@ public handler OnPaint()
 	if mImage is not nothing then
 	   put pattern with mImage transformed by tTransform into mPaint
 		scale mPaint by [ (my width / the width of mImage), (my height  / the height of mImage)]
-
-		put transform with matrix [mTransMatrixVarA,mTransMatrixVarB,mTransMatrixVarC,mTransMatrixVarD,mTransMatrixVarE,mTransMatrixVarF] into tTransform
-		transform mPaint by tTransform
-		transform mPath by tTransform
 	else
 		put my background paint into mPaint
 	end if
@@ -298,8 +301,9 @@ public handler OnPaint()
 end handler
 
 public handler OnClose()
- ---?
+
 end handler
+
 
 public handler rotatedTransformation(in pRotation as Number, in pCenter as Point, in pRotateClockwise as Boolean) returns Transform
   variable tX as Number
