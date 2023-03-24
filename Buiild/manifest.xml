@@ -6,6 +6,7 @@
   <license>community</license>
   <type>widget</type>
   <requires name="com.livecode.canvas"/>
+  <requires name="com.livecode.library.widgetutils"/>
   <requires name="com.livecode.math"/>
   <requires name="com.livecode.widget"/>
   <requires name="com.livecode.logic"/>
@@ -64,6 +65,10 @@
   <property name="rotation" get="number" set="number"/>
   <metadata key="rotation.editor">com.livecode.pi.number</metadata>
   <metadata key="rotation.default">0</metadata>
+  <property name="SVGPath" get="optional Path" set="string"/>
+  <metadata key="SVGPath.editor">com.livecode.pi.text</metadata>
+  <metadata key="SVGPath.label">SVG Path data</metadata>
+  <metadata key="SVGPath.default"></metadata>
   <handler name="OnCreate" parameters="" return="any"/>
   <handler name="OnSave" parameters="out array" return="any"/>
   <handler name="OnLoad" parameters="in array" return="any"/>

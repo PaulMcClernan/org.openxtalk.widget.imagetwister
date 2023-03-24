@@ -221,11 +221,11 @@ private handler CalculateScaledSizes()
 	put path mPath into tPath
 	if mMaintainAspectRatio then
 		constrainPathToRect(my bounds, tPath)
-		put the width of the bounding box of tPath into mScaledWidth
-		put the height of the bounding box of tPath into mScaledHeight
+	-- 	put the width of the bounding box of tPath into mScaledWidth
+	-- 	put the height of the bounding box of tPath into mScaledHeight
 	else
-		put my width into mScaledWidth
-		put my height into mScaledHeight
+		-- put my width into mScaledWidth
+		-- put my height into mScaledHeight
 	end if
 end handler
 
