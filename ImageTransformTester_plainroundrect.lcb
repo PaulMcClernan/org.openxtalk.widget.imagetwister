@@ -1,0 +1,489 @@
+/*
+
+This widget rounds corners.
+
+*/
+
+widget community.livecode.paulmcclernan.imagetester
+
+use com.livecode.canvas
+use com.livecode.widget
+use com.livecode.library.widgetutils
+use com.livecode.math
+
+metadata title is "Image Tester"
+metadata author is "Paul McClernan"
+metadata version is "1.0.0"
+metadata preferredSize is "150,150"
+metadata svgicon is "M0.000000 15.000000C-0.000001 6.715731 6.715729 0.000000 15.000000 0.000000L113.000000 0.000000C121.284271 0.000000 128.000000 6.715729 128.000000 15.000000L128.000000 17.000000C128.000000 25.284271 121.284271 32.000000 113.000000 32.000000L15.000000 32.000000C6.715728 32.000000-0.000001 25.284271 0.000000 16.999998L0.000000 15.000000Z"
+
+-- public
+private variable mRadius            as Number
+private variable mRoundTopLeft      as Boolean
+private variable mRoundTopRight     as Boolean
+private variable mRoundBottomRight  as Boolean
+private variable mRoundBottomLeft   as Boolean
+private variable mImagePath         as String
+private variable mResizeQuality     as String
+
+-- private
+private variable mImage             as optional Image
+private variable mPaint             as optional Paint
+
+property filename                   get mImagePath          set setImagePath
+metadata filename.editor is "com.livecode.pi.file"
+
+property "radius"                   get mRadius             set setRadius
+property roundTopLeft               get mRoundTopLeft       set setRoundTopLeft
+property roundTopRight              get mRoundTopRight      set setRoundTopRight
+property roundBottomRight           get mRoundBottomRight   set setRoundBottomRight
+property roundBottomLeft            get mRoundBottomLeft    set setRoundBottomLeft
+property formattedWidth             get getImageWidth
+property formattedHeight            get getImageHeight
+
+property resizeQuality					get getResizeQuality    set setResizeQuality
+metadata resizeQuality.editor is "com.livecode.pi.enum"
+metadata resizeQuality.options is "none,low,medium,high"
+metadata resizeQuality.default is "medium"
+
+metadata backgroundColor.editor is "com.livecode.pi.color"
+metadata backgroundColor.default is "255,0,0"
+metadata backgroundcolor.section is "Colors"
+
+private handler setRadius(in pRadius as Number)
+	-- put max(pRadius, 0) into mRadius
+	put pRadius into mRadius
+	redraw all
+end handler
+
+private handler getResizeQuality() returns String
+	return mResizeQuality
+end handler
+
+private handler setResizeQuality(in pQuality as String)
+	if not ["none","low","medium","high"] contains [pQuality] then
+		put "medium" into pQuality
+	end if
+	put pQuality into mResizeQuality
+	redraw all
+end handler
+
+private handler setImagePath(in pPath as String)
+	put pPath into mImagePath
+	put nothing into mImage
+	if mImagePath is not the empty string then
+		put image from file mImagePath into mImage
+		if mPath is the empty string then
+			put rounded rectangle path of rectangle [ 0, 0, my height, my width ] with radii [mRadius,mRadius] into mPath
+			CalculateScaledSizes()
+		end if
+	end if
+	OnGeometryChanged()
+	redraw all
+end handler
+
+private handler getImageWidth() returns Integer
+	if mImage is nothing then
+		return 0
+	else
+		return the width of mImage
+	end if
+end handler
+
+private handler getImageHeight() returns Integer
+	if mImage is nothing then
+		return 0
+	else
+		return the height of mImage
+	end if
+end handler
+
+private handler setRoundTopLeft(in pBoolean as Boolean)
+  put pBoolean into mRoundTopLeft
+  redraw all
+end handler
+
+private handler setRoundTopRight(in pBoolean as Boolean)
+  put pBoolean into mRoundTopRight
+  redraw all
+end handler
+
+private handler setRoundBottomRight(in pBoolean as Boolean)
+  put pBoolean into mRoundBottomRight
+  redraw all
+end handler
+
+private handler setRoundBottomLeft(in pBoolean as Boolean)
+  put pBoolean into mRoundBottomLeft
+  redraw all
+end handler
+
+private variable mTransMatrixVarA as Number
+property transformMatrixVarA            get mTransMatrixVarA    set setTransformMatrixVarA
+metadata transformMatrixVarA.default is "1"
+metadata transformMatrixVarA.editor is "com.livecode.pi.number"
+private handler setTransformMatrixVarA(in pVar as Number)
+  put pVar into mTransMatrixVarA
+  redraw all
+end handler
+
+private variable mTransMatrixVarB as Number
+property transformMatrixVarB           get mTransMatrixVarB    set setTransformMatrixVarB
+metadata transformMatrixVarB.default is "0"
+metadata transformMatrixVarB.editor is "com.livecode.pi.number"
+private handler setTransformMatrixVarB(in pVar as Number)
+  put pVar into mTransMatrixVarB
+  redraw all
+end handler
+
+private variable mTransMatrixVarC as Number
+property transformMatrixVarC           get mTransMatrixVarC    set setTransformMatrixVarC
+metadata transformMatrixVarC.default is "0"
+metadata transformMatrixVarC.editor is "com.livecode.pi.number"
+private handler setTransformMatrixVarC(in pVar as Number)
+	put pVar into mTransMatrixVarC
+	redraw all
+end handler
+
+private variable mTransMatrixVarD as Number
+property transformMatrixVarD            get mTransMatrixVarD    set setTransformMatrixVarD
+metadata transformMatrixVarD.default is "1"
+metadata transformMatrixVarD.editor is "com.livecode.pi.number"
+private handler setTransformMatrixVarD(in pVar as Number)
+	put pVar into mTransMatrixVarD
+	redraw all
+end handler
+
+private variable mTransMatrixVarE as Number
+property transformMatrixVarE            get mTransMatrixVarE    set setTransformMatrixVarE
+metadata transformMatrixVarE.default is "0"
+metadata transformMatrixVarE.editor is "com.livecode.pi.number"
+private handler setTransformMatrixVarE(in pVar as Number)
+	put pVar into mTransMatrixVarE
+	redraw all
+end handler
+
+private variable mTransMatrixVarF as Number
+property transformMatrixVarF            get mTransMatrixVarF    set setTransformMatrixVarF
+metadata transformMatrixVarF.default is "0"
+metadata transformMatrixVarF.editor is "com.livecode.pi.number"
+private handler setTransformMatrixVarF(in pVar as Number)
+	put pVar into mTransMatrixVarF
+	redraw all
+end handler
+
+private variable mSkewVarA as Number
+property skewVarA            get mSkewVarA    set setSkewVarA
+metadata skewVarA.default is "0"
+metadata skewVarA.editor is "com.livecode.pi.number"
+private handler setSkewVarA(in pVar as Number)
+	put pVar into mSkewVarA
+	redraw all
+end handler
+
+private variable mSkewVarB as Number
+property skewVarB           get mSkewVarB    set setSkewVarB
+metadata skewVarB.default is "0"
+metadata skewVarB.editor is "com.livecode.pi.number"
+private handler setSkewVarB(in pVar as Number)
+	put pVar into mSkewVarB
+	redraw all
+end handler
+
+	private variable mRotation as Number
+	property "rotation"            get mRotation    set setRotation
+	metadata rotation.editor is "com.livecode.pi.number"
+	metadata rotation.default is "0"
+	private handler setRotation(in pVar as Number)
+	put pVar into mRotation
+	redraw all
+	end handler
+
+/**
+Syntax:
+set the iconPath of <widget> to <pSVGPath>
+get the iconPath of <widget>
+
+Summary: The path data displayed by the SVG path widget.
+
+Parameters:
+pSVGPath: A string containing valid SVG path syntax.
+
+Example:
+-- Create a filled triangle
+set the iconPath of widget "SVG Icon" to "M150 0 L75 200 L225 200 Z"
+
+Description:
+The SVG path string to be displayed by the SVG path widget.
+
+See https://www.w3.org/TR/SVG/paths.html#PathData for the SVG path data
+specification.
+*/
+private variable mPath as Path
+property iconPath get mPath set setPath
+metadata iconPath.editor is "com.livecode.pi.text"
+metadata iconPath.label is "SVG Path data"
+metadata iconPath.default is ""
+
+private handler setPath(in pPath as String) returns nothing
+	if pPath is not the empty string then
+		------------------------ coould use some SVGPath string validation here!
+		put path pPath into mPath
+		-- CalculateScaledSizes()
+		variable tTransform as Transform
+	   put scaleAndMaintainAspectRatioTransform( the bounding box of mPath, my bounds, my bounds) into tTransform
+		transform mPath by tTransform
+
+		-- log [the right of mPath]
+		-- log [the bottom of mPath]
+		log [my pixel scale]
+      -- scale mPath by [ the width of mPath / my width , the height of mPath / my height]
+	else
+		put rounded rectangle path of rectangle [ 0, 0, my height, my width ] with radii [mRadius,mRadius] into mPath
+		variable tTransform as Transform
+	   put scaleAndMaintainAspectRatioTransform( the bounding box of mPath, my bounds, my bounds) into tTransform
+		transform mPath by tTransform
+	 end if
+	redraw all
+end handler
+-- used in various places to calculate the scaledWidth & scaledHeight variables
+private handler CalculateScaledSizes()
+	-- recalculate the bounding box for the path
+	  variable tPath as Path
+	  put path mPath into tPath
+	-- if mMaintainAspectRatio then
+	 	constrainPathToRect( my bounds, mPath)
+		-- put the width of the bounding box of tPath into mScaledWidth
+		-- put the height of the bounding box of tPath into mScaledHeight
+   --else
+		-- put my width into mScaledWidth
+	-- 	put my height into mScaledHeight
+	--	end if
+end handler
+
+-- Translated from some Skia code
+public handler scaleAndMaintainAspectRatioTransform(in pSrcBounds as Rectangle, in pDestBounds as Rectangle, in pConstraintBounds as Rectangle) returns Transform
+  -- Prepare values for matrix transformations
+	variable isLarger as Boolean
+	variable sX as Number
+	variable sY as Number
+
+	put false into isLarger
+	put the width of pDestBounds / the width of pSrcBounds into sX
+	put the height of pDestBounds / the height of pSrcBounds into sY
+
+	if sX > sY then
+		put true into isLarger
+		put sY into sX
+	else
+		put sX into sY
+	end if
+
+	variable tX as Number
+	variable tY as Number
+
+	put the left of pDestBounds - (the left of pSrcBounds*sX) into tX
+	put the top of pDestBounds - (the top of pSrcBounds*sY) into tY
+
+	variable tDiff as Number
+
+	if isLarger then
+		put the width of pConstraintBounds - (the width of pSrcBounds*sY) into tDiff
+	else
+		put the height of pConstraintBounds - (the height of pSrcBounds*sY) into tDiff
+	end if
+
+	-- align center
+	divide tDiff by 2
+
+	if isLarger then
+		add tDiff to tX
+	else
+		add tDiff to tY
+	end if
+
+	-- create transformation matrix and apply
+	variable tTransform as Transform
+	put transform with matrix [sX, 0, 0, sY, tX, tY] into tTransform
+
+	return tTransform
+end handler
+
+
+	public handler OnCreate()
+		put 15 into mRadius
+	   -- 	put the empty path into mPath
+	   put rounded rectangle path of rectangle [ 0, 0, my width, my height] with radii [mRadius,mRadius] into mPath
+
+		put "" into mImagePath
+		put true into mRoundTopLeft
+		put true into mRoundTopRight
+		put true into mRoundBottomRight
+		put true into mRoundBottomLeft
+		put "medium" into mResizeQuality
+		put nothing into mImage
+		put nothing into mPaint
+		put 1 into mTransMatrixVarA
+		put 0 into mTransMatrixVarB
+		put 0 into mTransMatrixVarC
+		put 1 into mTransMatrixVarD
+		put 0 into mTransMatrixVarE
+		put 0 into mTransMatrixVarF
+		put 0 into mSkewVarA
+		put 0 into mSkewVarB
+		put 0 into mRotation
+	end handler
+
+
+	public handler OnSave(out rProperties as Array)
+		put the empty array into rProperties
+
+		put mRadius into rProperties["radius"]
+		put mPath into rProperties["iconPath"]
+		put mImagePath into rProperties["filename"]
+		put mRoundTopLeft into rProperties["roundTopLeft"]
+		put mRoundTopRight into rProperties["roundTopRight"]
+		put mRoundBottomRight into rProperties["roundBottomRight"]
+		put mRoundBottomLeft into rProperties["roundBottomLeft"]
+		put mResizeQuality into rProperties["resizeQuality"]
+	end handler
+
+
+	public handler OnLoad(in pProperties as Array)
+		put pProperties["radius"] into mRadius
+		put pProperties["iconPath"] into mPath
+		put pProperties["filename"] into mImagePath
+		put pProperties["roundTopLeft"] into mRoundTopLeft
+		put pProperties["roundTopRight"] into mRoundTopRight
+		put pProperties["roundBottomRight"] into mRoundBottomRight
+		put pProperties["roundBottomLeft"] into mRoundBottomLeft
+		put pProperties["resizeQuality"] into mResizeQuality
+	end handler
+
+	public handler OnOpen()
+		put nothing into mImage
+		if mImagePath is not empty then
+			put image from file mImagePath into mImage
+		end if
+		redraw all
+	end handler
+
+	public handler OnGeometryChanged()
+		redraw all
+	end handler
+
+	public handler OnMouseUp()
+		if the mouse position is within my bounds then
+			post "mouseUp" to my script object with [the click button formatted as string] -- formatint needed until dp-2
+		else
+			post "mouseRelease" to my script object with [the click button formatted as string] -- formatint needed until dp-2
+		end if
+	end handler
+
+
+	public handler OnMouseCancel()
+		post "mouseRelease" to my script object with [the click button formatted as string] -- formatint needed until dp-2
+	end handler
+
+
+	public handler OnMouseDown()
+		post "mouseDown" to my script object with [the click button formatted as string]
+	end handler
+
+-- called whenever needs to redraw the widget
+public handler OnPaint()
+	variable tScale as Number
+	variable tTransform
+	variable tTransformB
+	variable tPath
+	variable tPaint
+	variable tWidgetLocPoint as Point
+	variable tCompWidth as Number
+	variable tCompHeight as Number
+	variable tLeft as Number
+	variable tTop as Number
+
+	set the image resize quality of this canvas to mResizeQuality
+	put point [my width *.5, my height * .5] into tWidgetLocPoint
+	put rotatedTransformation(mRotation,tWidgetLocPoint,true) into tTransform
+	if mPath is empty then
+		put rounded rectangle path of rectangle [ 0, 0, my height, my width ] with radii [mRadius,mRadius] into mPath
+		-- CalculateScaledSizes()
+		put mPath into tPath
+	   transform tPath by tTransform
+
+	else
+		put mPath into tPath
+		-- put scaleAndMaintainAspectRatioTransform( the bounding box of mPath, my bounds, my bounds) into tTransform
+ 		transform tPath by tTransform
+	end if
+
+	if mImage is not nothing then
+		if mPaint is nothing then
+			put pattern with mImage transformed by tTransform into tPaint
+		else
+			put mPaint into tPaint
+		end if
+		scale tPaint by [ (my width / the width of mImage), (my height / the height of mImage )]
+		scale tPath by [ (my width / (the width of mImage * my pixel scale)), (my height  / (the height of mImage * my pixel scale)) ]
+
+		put transform with matrix [mTransMatrixVarA,mTransMatrixVarB,mTransMatrixVarC,mTransMatrixVarD,mTransMatrixVarE,mTransMatrixVarF] into tTransform
+		transform tPaint by tTransform
+		transform tPath by tTransform
+	else
+	 scale tPath by [ (my width / the width of the bounding box of tPath), (my height / the height of the bounding box of tPath)]
+	 --	scale tPath by [ (my width / the width of mImage), (my height  / the height of mImage)]
+		put transform with matrix [mTransMatrixVarA,mTransMatrixVarB,mTransMatrixVarC,mTransMatrixVarD,mTransMatrixVarE,mTransMatrixVarF] into tTransform
+		transform tPath by tTransform
+		put my foreground paint into tPaint
+	end if
+	set the paint of this canvas to tPaint
+	fill tPath on this canvas
+	-- stroke tPath on this canvas
+end handler
+
+public handler OnClose()
+ ---?
+end handler
+
+public handler rotatedTransformation(in pRotation as Number, in pCenter as Point, in pRotateClockwise as Boolean) returns Transform
+  variable tX as Number
+  variable tY as Number
+  variable tOriginX as Number
+  variable tOriginY as Number
+  variable tMatrix as List
+  variable tA as Number
+  variable tB as Number
+  variable tC as Number
+  variable tD as Number
+
+  -- Clockwise: sin for B, -sin for C
+  -- Counterclockwise: -sin for B, sin for C
+  variable tAngle as Number
+  put (pRotation mod 360)/360*2*pi into tAngle
+
+  put cos(tAngle) into tA -- scale the x
+
+  if pRotateClockwise then
+     put sin(tAngle) into tB -- scale the y
+     put -sin(tAngle) into tC -- skew the x
+  else
+     put -sin(tAngle) into tB -- scale the y
+     put sin(tAngle) into tC -- skew the x
+  end if
+  put cos(tAngle) into tD -- skew the y
+  put the x of pCenter into tOriginX
+  put the y of pCenter into tOriginY
+
+  put tOriginX - tOriginX*tA - tOriginY*tC into tX
+  put tOriginY - tOriginX*tB - tOriginY*tD into tY
+
+  variable tTransform as Transform
+  put transform with matrix [tA,tB,tC,tD,tX,tY] into tTransform
+
+  skew tTransform by [mSkewVarA, mSkewVarB]
+
+  return tTransform
+end handler
+
+end widget
