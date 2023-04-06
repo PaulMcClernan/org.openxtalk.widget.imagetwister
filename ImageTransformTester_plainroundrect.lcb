@@ -17,23 +17,15 @@ metadata version is "1.0.0"
 metadata preferredSize is "150,150"
 metadata svgicon is "M0.000000 15.000000C-0.000001 6.715731 6.715729 0.000000 15.000000 0.000000L113.000000 0.000000C121.284271 0.000000 128.000000 6.715729 128.000000 15.000000L128.000000 17.000000C128.000000 25.284271 121.284271 32.000000 113.000000 32.000000L15.000000 32.000000C6.715728 32.000000-0.000001 25.284271 0.000000 16.999998L0.000000 15.000000Z"
 
--- public
-private variable mRadius            as Number
 private variable mRoundTopLeft      as Boolean
 private variable mRoundTopRight     as Boolean
 private variable mRoundBottomRight  as Boolean
 private variable mRoundBottomLeft   as Boolean
-private variable mImagePath         as String
-private variable mResizeQuality     as String
-
 -- private
 private variable mImage             as optional Image
 private variable mPaint             as optional Paint
 
-property filename                   get mImagePath          set setImagePath
-metadata filename.editor is "com.livecode.pi.file"
 
-property "radius"                   get mRadius             set setRadius
 property roundTopLeft               get mRoundTopLeft       set setRoundTopLeft
 property roundTopRight              get mRoundTopRight      set setRoundTopRight
 property roundBottomRight           get mRoundBottomRight   set setRoundBottomRight
@@ -41,15 +33,12 @@ property roundBottomLeft            get mRoundBottomLeft    set setRoundBottomLe
 property formattedWidth             get getImageWidth
 property formattedHeight            get getImageHeight
 
-property resizeQuality					get getResizeQuality    set setResizeQuality
-metadata resizeQuality.editor is "com.livecode.pi.enum"
-metadata resizeQuality.options is "none,low,medium,high"
-metadata resizeQuality.default is "medium"
-
 metadata backgroundColor.editor is "com.livecode.pi.color"
 metadata backgroundColor.default is "255,0,0"
 metadata backgroundcolor.section is "Colors"
 
+private variable mRadius            as Number
+property "radius"                   get mRadius             set setRadius
 private handler setRadius(in pRadius as Number)
 	-- put max(pRadius, 0) into mRadius
 	put pRadius into mRadius
@@ -60,6 +49,11 @@ private handler getResizeQuality() returns String
 	return mResizeQuality
 end handler
 
+private variable mResizeQuality     as String
+property resizeQuality					get getResizeQuality    set setResizeQuality
+metadata resizeQuality.editor is "com.livecode.pi.enum"
+metadata resizeQuality.options is "none,low,medium,high"
+metadata resizeQuality.default is "medium"
 private handler setResizeQuality(in pQuality as String)
 	if not ["none","low","medium","high"] contains [pQuality] then
 		put "medium" into pQuality
@@ -68,17 +62,16 @@ private handler setResizeQuality(in pQuality as String)
 	redraw all
 end handler
 
+private variable mImagePath         as String
+property filename                   get mImagePath          set setImagePath
+metadata filename.editor is "com.livecode.pi.file"
 private handler setImagePath(in pPath as String)
 	put pPath into mImagePath
 	put nothing into mImage
 	if mImagePath is not the empty string then
 		put image from file mImagePath into mImage
-		if mPath is the empty string then
-			put rounded rectangle path of rectangle [ 0, 0, my height, my width ] with radii [mRadius,mRadius] into mPath
-			CalculateScaledSizes()
-		end if
 	end if
-	OnGeometryChanged()
+	-- OnGeometryChanged()
 	redraw all
 end handler
 
@@ -118,57 +111,57 @@ private handler setRoundBottomLeft(in pBoolean as Boolean)
   redraw all
 end handler
 
-private variable mTransMatrixVarA as Number
-property transformMatrixVarA            get mTransMatrixVarA    set setTransformMatrixVarA
-metadata transformMatrixVarA.default is "1"
-metadata transformMatrixVarA.editor is "com.livecode.pi.number"
-private handler setTransformMatrixVarA(in pVar as Number)
-  put pVar into mTransMatrixVarA
+private variable mTransMatrixHorizWidth as Number
+property transMatrixHorizWidth            get mTransMatrixHorizWidth    set setTransMatrixHorizWidth
+metadata transMatrixHorizWidth.default is "1"
+metadata transMatrixHorizWidth.editor is "com.livecode.pi.number"
+private handler setTransMatrixHorizWidth(in pVar as Number)
+  put pVar into mTransMatrixHorizWidth
   redraw all
 end handler
 
-private variable mTransMatrixVarB as Number
-property transformMatrixVarB           get mTransMatrixVarB    set setTransformMatrixVarB
-metadata transformMatrixVarB.default is "0"
-metadata transformMatrixVarB.editor is "com.livecode.pi.number"
-private handler setTransformMatrixVarB(in pVar as Number)
-  put pVar into mTransMatrixVarB
+private variable mTransformHorizSkew as Number
+property transformHorizSkew          get mTransformHorizSkew   set setTransformHorizSkew
+metadata transformHorizSkew.default is "0"
+metadata transformHorizSkew.editor is "com.livecode.pi.number"
+private handler setTransformHorizSkew(in pVar as Number)
+  put pVar into mTransformHorizSkew
   redraw all
 end handler
 
-private variable mTransMatrixVarC as Number
-property transformMatrixVarC           get mTransMatrixVarC    set setTransformMatrixVarC
-metadata transformMatrixVarC.default is "0"
-metadata transformMatrixVarC.editor is "com.livecode.pi.number"
-private handler setTransformMatrixVarC(in pVar as Number)
-	put pVar into mTransMatrixVarC
+private variable mTransformVertSkew as Number
+property transformVertSkew           get mTransformVertSkew    set setTransformVertSkew
+metadata transformVertSkew.default is "0"
+metadata transformVertSkew.editor is "com.livecode.pi.number"
+private handler setTransformVertSkew(in pVar as Number)
+	put pVar into mTransformVertSkew
 	redraw all
 end handler
 
-private variable mTransMatrixVarD as Number
-property transformMatrixVarD            get mTransMatrixVarD    set setTransformMatrixVarD
-metadata transformMatrixVarD.default is "1"
-metadata transformMatrixVarD.editor is "com.livecode.pi.number"
-private handler setTransformMatrixVarD(in pVar as Number)
-	put pVar into mTransMatrixVarD
+private variable mTransformVertHeight as Number
+property transformVertHeight            get mTransformVertHeight    set setTransformVertHeight
+metadata transformVertHeight.default is "1"
+metadata transformVertHeight.editor is "com.livecode.pi.number"
+private handler setTransformVertHeight(in pVar as Number)
+	put pVar into mTransformVertHeight
 	redraw all
 end handler
 
-private variable mTransMatrixVarE as Number
-property transformMatrixVarE            get mTransMatrixVarE    set setTransformMatrixVarE
-metadata transformMatrixVarE.default is "0"
-metadata transformMatrixVarE.editor is "com.livecode.pi.number"
-private handler setTransformMatrixVarE(in pVar as Number)
-	put pVar into mTransMatrixVarE
+private variable mTransformHorizPosition as Number
+property transformHorizPosition            get mTransformHorizPosition    set setTransformHorizPosition
+metadata transformHorizPosition.default is "0"
+metadata transformHorizPosition.editor is "com.livecode.pi.number"
+private handler setTransformHorizPosition(in pVar as Number)
+	put pVar into mTransformHorizPosition
 	redraw all
 end handler
 
-private variable mTransMatrixVarF as Number
-property transformMatrixVarF            get mTransMatrixVarF    set setTransformMatrixVarF
-metadata transformMatrixVarF.default is "0"
-metadata transformMatrixVarF.editor is "com.livecode.pi.number"
-private handler setTransformMatrixVarF(in pVar as Number)
-	put pVar into mTransMatrixVarF
+private variable mTransformVertPosition as Number
+property transformVertPosition            get mTransformVertPosition    set setTransformVertPosition
+metadata transformVertPosition.default is "0"
+metadata transformVertPosition.editor is "com.livecode.pi.number"
+private handler setTransformVertPosition(in pVar as Number)
+	put pVar into mTransformVertPosition
 	redraw all
 end handler
 
@@ -190,14 +183,14 @@ private handler setSkewVarB(in pVar as Number)
 	redraw all
 end handler
 
-	private variable mRotation as Number
-	property "rotation"            get mRotation    set setRotation
-	metadata rotation.editor is "com.livecode.pi.number"
-	metadata rotation.default is "0"
-	private handler setRotation(in pVar as Number)
+private variable mRotation as Number
+property "rotation"            get mRotation    set setRotation
+metadata rotation.editor is "com.livecode.pi.number"
+metadata rotation.default is "0"
+private handler setRotation(in pVar as Number)
 	put pVar into mRotation
 	redraw all
-	end handler
+end handler
 
 /**
 Syntax:
@@ -231,26 +224,26 @@ private handler setPath(in pPath as String) returns nothing
 		put path pPath into mPath
 		-- CalculateScaledSizes()
 		variable tTransform as Transform
-	   put scaleAndMaintainAspectRatioTransform( the bounding box of mPath, my bounds, my bounds) into tTransform
+	   put scaleAndMaintainAspectRatioTransform( my bounds, the bounding box of mPath, my bounds) into tTransform
 		transform mPath by tTransform
 
 		-- log [the right of mPath]
 		-- log [the bottom of mPath]
-		log [my pixel scale]
+		-- log [my pixel scale]
       -- scale mPath by [ the width of mPath / my width , the height of mPath / my height]
 	else
 		put rounded rectangle path of rectangle [ 0, 0, my height, my width ] with radii [mRadius,mRadius] into mPath
-		variable tTransform as Transform
-	   put scaleAndMaintainAspectRatioTransform( the bounding box of mPath, my bounds, my bounds) into tTransform
-		transform mPath by tTransform
+		--variable tTransform as Transform
+	  -- put scaleAndMaintainAspectRatioTransform( the bounding box of mPath, my bounds, my bounds) into tTransform
+	--  	transform mPath by tTransform
 	 end if
 	redraw all
 end handler
 -- used in various places to calculate the scaledWidth & scaledHeight variables
 private handler CalculateScaledSizes()
 	-- recalculate the bounding box for the path
-	  variable tPath as Path
-	  put path mPath into tPath
+	 -- variable tPath as Path
+	 --  put path mPath into tPath
 	-- if mMaintainAspectRatio then
 	 	constrainPathToRect( my bounds, mPath)
 		-- put the width of the bounding box of tPath into mScaledWidth
@@ -323,12 +316,12 @@ end handler
 		put "medium" into mResizeQuality
 		put nothing into mImage
 		put nothing into mPaint
-		put 1 into mTransMatrixVarA
-		put 0 into mTransMatrixVarB
-		put 0 into mTransMatrixVarC
-		put 1 into mTransMatrixVarD
-		put 0 into mTransMatrixVarE
-		put 0 into mTransMatrixVarF
+		put 1 into mTransMatrixHorizWidth
+		put 0 into mTransformHorizSkew
+		put 0 into mTransformVertSkew
+		put 1 into mTransformVertHeight
+		put 0 into mTransformHorizPosition
+		put 0 into mTransformVertPosition
 		put 0 into mSkewVarA
 		put 0 into mSkewVarB
 		put 0 into mRotation
@@ -425,15 +418,15 @@ public handler OnPaint()
 			put mPaint into tPaint
 		end if
 		scale tPaint by [ (my width / the width of mImage), (my height / the height of mImage )]
-		scale tPath by [ (my width / (the width of mImage * my pixel scale)), (my height  / (the height of mImage * my pixel scale)) ]
+		scale tPath by [ (my width / (the width of the bounding box of mPath)), (my height  / (the height of the bounding box of mPath)) ]
 
-		put transform with matrix [mTransMatrixVarA,mTransMatrixVarB,mTransMatrixVarC,mTransMatrixVarD,mTransMatrixVarE,mTransMatrixVarF] into tTransform
+		put transform with matrix [mTransMatrixHorizWidth,mTransformHorizSkew,mTransformVertPosition,mTransformVertHeight,mTransformHorizPosition,mTransformVertPosition] into tTransform
 		transform tPaint by tTransform
 		transform tPath by tTransform
 	else
 	 scale tPath by [ (my width / the width of the bounding box of tPath), (my height / the height of the bounding box of tPath)]
 	 --	scale tPath by [ (my width / the width of mImage), (my height  / the height of mImage)]
-		put transform with matrix [mTransMatrixVarA,mTransMatrixVarB,mTransMatrixVarC,mTransMatrixVarD,mTransMatrixVarE,mTransMatrixVarF] into tTransform
+		put transform with matrix [mTransMatrixHorizWidth,mTransformHorizSkew,mTransformVertPosition,mTransformVertHeight,mTransformHorizPosition,mTransformVertPosition] into tTransform
 		transform tPath by tTransform
 		put my foreground paint into tPaint
 	end if
