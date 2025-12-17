@@ -1,5 +1,6 @@
 import module community.livecode.paulmcclernan.imagetester
   use com.livecode.canvas
+  use com.livecode.library.widgetutils
   use com.livecode.math
   use com.livecode.widget
   use com.livecode.logic
@@ -10,9 +11,13 @@ import module community.livecode.paulmcclernan.imagetester
   use com.livecode.binary
   use com.livecode.string
   use com.livecode.type
-  use com.livecode.array
   use com.livecode.engine
+  use com.livecode.array
   use com.livecode.mathfoundation
+  handler setMaintainAspectRatio(in pBoolean as Boolean) returns optional any
+  handler setIsStroked(in pBoolean as Boolean) returns optional any
+  handler setLineSize(in pAngle as Number) returns nothing
+  handler scaleAndMaintainAspectRatioTransform(in pSrcBounds as Rectangle, in pDestBounds as Rectangle, in pConstraintBounds as Rectangle) returns Transform
   handler OnCreate() returns optional any
   handler OnSave(out rProperties as Array) returns optional any
   handler OnLoad(in pProperties as Array) returns optional any

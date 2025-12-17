@@ -7,7 +7,52 @@ author: Paul McClernan
 version: 1.0.0
 
 
-Name: SVGPath
+Name: stroked
+
+Type: property
+
+Syntax: set the stroked of <widget> to {true|false}
+get the stroked of <widget>
+
+Summary: `true` if the SVG path is highlighted; `false` otherwise
+
+Description:
+Use the `highlight` property to test or control whether the SVG path is
+displayed as highlighted or not.
+
+
+
+Name: maintainAspectRatio
+
+Type: property
+
+Syntax: set the maintainAspectRatio of <widget> to {true|false}
+get the maintainAspectRatio of <widget>
+
+Summary: Whether the SVG path maintains its aspect ratio when resized.
+
+Description:
+If the <maintainAspectRatio> of the SVG path is `true`, the icon will be its
+maximum size within its bounds while maintaining the original ratio of width
+to height. If `false`, it will stretch to fit the extent of its bounds.
+
+
+
+Name: lineSize
+
+Type: property
+
+Syntax: set the borderColor of <widget> to <pColor>
+get the borderColor of <widget>
+
+Summary: Determines the color of the icon when highlighted.
+
+Description: Use the <borderColor> property to set the color the SVG path will be stroked with.
+
+
+
+
+Name: iconPath
 
 Type: property
 
